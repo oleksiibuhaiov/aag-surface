@@ -1,0 +1,9 @@
+---
+description: "Agent surface governance"
+alwaysApply: true
+---
+# Agent surface governance
+
+Before changing, generating, installing, validating, or committing `~/aag-surface` or its owned integrations, read and follow the `aag-surface-maintain` skill.
+
+This requirement applies to this surface's entries, not unrelated content in shared agent directories. If the skill cannot be read or followed, report the blocker before changing the surface.
