@@ -45,6 +45,13 @@ dependency-aware implementation, validation, and delivery across repositories.
 Four skills maintain the surface and author rules, skills, and agents. There
 are no production custom agents yet.
 
+Two further skills support everyday work: `aag-surface-reset-repositories`
+previews or performs explicitly requested cleanup to each repository's integration
+branch, and `aag-surface-explain-clearly` provides grounded technical explanations.
+The `aag-surface-technical-explanation-clarity` rule selects the explanation skill
+automatically. Both skills are generated for Codex and the Cursor plugin through
+the same workflow as the maintenance skills.
+
 ## Generate and validate
 
 Use Python 3.11 or newer and a POSIX shell. There are no third-party Python
