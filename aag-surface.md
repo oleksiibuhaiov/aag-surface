@@ -36,6 +36,7 @@ generator or installation command verifies file operations, not client loading.
   state/                        # machine-local; Git-ignored
     aag-surface-install.json
     aag-surface.lock
+    aag-surface-orchestrate-task/<task-name>/  # created when a task starts
 ```
 
 The rules cover surface governance, workspace coordination, concise technical
@@ -52,6 +53,22 @@ branch, and `aag-surface-explain-clearly` provides grounded technical explanatio
 when explicitly invoked: `$aag-surface-explain-clearly` in Codex or
 `/aag-surface-explain-clearly` in Cursor. Both skills are generated for Codex and
 the Cursor plugin through the same workflow as the maintenance skills.
+
+The [orchestration skill](canonical/skills/aag-surface-orchestrate-task/SKILL.md)
+coordinates delegated planning, staged implementation, and review across one or
+more repositories. Both delegated roles inherit the parent's model and reasoning
+settings; unavailable inheritance requires the user's choice of an alternative.
+Invoke it with `$aag-surface-orchestrate-task` in Codex or
+`/aag-surface-orchestrate-task` in Cursor and provide the work item. It requires
+approval of the plan before implementation and separate approval for external
+actions.
+
+Task records live under
+`~/aag-surface/state/aag-surface-orchestrate-task/<task-name>/`, with short lowercase
+names such as `charmlibs migration`. The suggested state, plan, and optional
+evidence files can adapt to the task; these machine-local records are Git-ignored.
+The full planning, implementation, review, and resume loop still needs verification
+on a real task.
 
 ## Generate and validate
 
