@@ -363,7 +363,7 @@ def status(source, home):
     return {"source": str(source), "home": str(home),
             "installation": "installed" if entries else "not installed",
             "owned_entries": len(entries), "missing_or_changed": problems,
-            "runtime_verification": "incomplete: Cursor plugin/native skill duplication unresolved"}
+            "runtime_verification": "not assessed by status; verify loading in each client separately"}
 
 
 @contextmanager
