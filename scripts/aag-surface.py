@@ -46,7 +46,7 @@ def files(path):
             for p in sorted(path.rglob("*")) if p.is_file()}
 
 
-def frontmatter(path, fields):
+def frontmatter(path, fields, optional=()):
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n") or "\n---\n" not in text[4:]:
         raise SurfaceError(f"Missing frontmatter: {path}")
@@ -54,13 +54,13 @@ def frontmatter(path, fields):
     data = {}
     for line in header.splitlines():
         key, sep, value = line.partition(":")
-        if not sep or key not in fields or key in data or not value.strip():
+        if not sep or key not in (*fields, *optional) or key in data or not value.strip():
             raise SurfaceError(f"Invalid frontmatter field in {path}: {line}")
         value = value.strip()
         data[key] = json.loads(value) if value.startswith('"') else value
         if not isinstance(data[key], str) or "\n" in data[key]:
             raise SurfaceError(f"Expected one-line text for {key}: {path}")
-    if set(data) != set(fields) or not body.strip():
+    if not set(fields).issubset(data) or not body.strip():
         raise SurfaceError(f"Expected fields {fields} and a body: {path}")
     require_name(data["name"])
     return data, body.rstrip() + "\n"
@@ -100,15 +100,28 @@ def render(source):
         if not skill.is_dir():
             raise SurfaceError(f"Expected skill directory: {skill}")
         require_name(skill.name)
-        data, body = frontmatter(skill / "SKILL.md", ("name", "description"))
+        data, body = frontmatter(skill / "SKILL.md", ("name", "description"), ("invocation",))
         if data["name"] != skill.name:
             raise SurfaceError(f"Skill name must match its directory: {skill}")
-        for relative, content in files(skill).items():
+        invocation = data.get("invocation", "auto")
+        if invocation not in ("auto", "explicit"):
+            raise SurfaceError(f"Skill invocation must be auto or explicit: {skill}")
+        resources = files(skill)
+        if invocation == "explicit" and "agents/openai.yaml" in resources:
+            raise SurfaceError(f"agents/openai.yaml is generated for explicit invocation: {skill}")
+        # Cursor also imports Codex skills, so both copies carry its native flag.
+        invocation_header = "disable-model-invocation: true\n" if invocation == "explicit" else ""
+        for relative, content in resources.items():
             if relative == "SKILL.md":
                 content = (f"---\nname: {quoted(data['name'])}\n"
-                           f"description: {quoted(data['description'])}\n---\n{body}").encode()
+                           f"description: {quoted(data['description'])}\n"
+                           f"{invocation_header}---\n{body}").encode()
             result[f"codex/skills/{skill.name}/{relative}"] = content
             result[f"cursor/aag-surface/skills/{skill.name}/{relative}"] = content
+        if invocation == "explicit":
+            result[f"codex/skills/{skill.name}/agents/openai.yaml"] = (
+                b"policy:\n  allow_implicit_invocation: false\n"
+            )
     for path in sorted((canonical / "agents").glob("*.md")):
         data, body = frontmatter(path, ("name", "description", "access"))
         if data["name"] != path.stem or data["access"] not in ("read-only", "inherit"):
@@ -335,6 +348,7 @@ def uninstall(source, home):
     prior = manifest(source, home)
     if prior["entries"]:
         apply_changes(source, home, {}, prior)
+    (source / "state" / STATE).unlink(missing_ok=True)
 
 
 def status(source, home):

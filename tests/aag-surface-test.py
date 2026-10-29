@@ -145,6 +145,43 @@ class SurfaceTests(unittest.TestCase):
         self.assertEqual(agent["description"], description)
         self.assertEqual(agent["developer_instructions"], body)
 
+    def test_explicit_invocation_policy_survives_install_and_update(self):
+        skill = self.source / "canonical/skills/aag-surface-author-rule/SKILL.md"
+        original = skill.read_text()
+        skill.write_text(original.replace("\n---\n", "\ninvocation: explicit\n---\n", 1))
+        self.command("sync")
+        self.lifecycle("install")
+        for root in (self.source / "generated/codex", self.home / ".codex",
+                     self.source / "generated/cursor/aag-surface",
+                     self.home / ".cursor/plugins/local/aag-surface"):
+            header = (root / "skills/aag-surface-author-rule/SKILL.md").read_text().split("---\n")[1]
+            self.assertIn("disable-model-invocation: true\n", header)
+        for root in (self.source / "generated/codex", self.home / ".codex"):
+            policy = root / "skills/aag-surface-author-rule/agents/openai.yaml"
+            self.assertEqual(policy.read_text(), "policy:\n  allow_implicit_invocation: false\n")
+            self.assertFalse((root / "skills/aag-surface-maintain/agents/openai.yaml").exists())
+        skill.write_text(original)
+        self.command("sync")
+        self.lifecycle("install")
+        for root in (self.home / ".codex", self.home / ".cursor/plugins/local/aag-surface"):
+            self.assertNotIn("disable-model-invocation", (root / "skills/aag-surface-author-rule/SKILL.md").read_text())
+            self.assertFalse((root / "skills/aag-surface-author-rule/agents/openai.yaml").exists())
+
+    def test_invalid_or_conflicting_invocation_policy_preserves_output(self):
+        skill = self.source / "canonical/skills/aag-surface-author-rule/SKILL.md"
+        original = skill.read_text()
+        self.command("sync")
+        before = self.generated()
+        skill.write_text(original.replace("\n---\n", "\ninvocation: typo\n---\n", 1))
+        self.command("sync", success=False)
+        self.assertEqual(self.generated(), before)
+        skill.write_text(original.replace("\n---\n", "\ninvocation: explicit\n---\n", 1))
+        policy = skill.parent / "agents/openai.yaml"
+        policy.parent.mkdir()
+        policy.write_text("policy:\n  allow_implicit_invocation: true\n")
+        self.command("sync", success=False)
+        self.assertEqual(self.generated(), before)
+
     def test_install_update_uninstall_preserve_neighbors_and_source(self):
         company = self.home / ".codex/skills/company/SKILL.md"
         company.parent.mkdir(parents=True)
@@ -294,6 +331,27 @@ class SurfaceTests(unittest.TestCase):
         (self.home / ".codex").symlink_to(outside, target_is_directory=True)
         self.lifecycle("install", success=False)
         self.assertEqual(list(outside.iterdir()), [])
+
+    def test_uninstall_releases_source_binding_before_move(self):
+        self.command("sync")
+        self.lifecycle("install")
+        manifest = self.source / "state/aag-surface-install.json"
+        prior = json.loads(manifest.read_text())
+        self.lifecycle("uninstall")
+        self.assertFalse(manifest.exists())
+        # Also release an empty manifest left by an older version.
+        manifest.write_text(json.dumps(dict(prior, entries={})))
+        self.lifecycle("uninstall")
+        self.assertFalse(manifest.exists())
+        moved = self.root / "moved source"
+        self.source.rename(moved)
+        self.source = moved
+        self.entry = moved / "aag-surface.sh"
+        self.assertEqual(json.loads(self.lifecycle("status").stdout)["installation"], "not installed")
+        self.lifecycle("install")
+        state = json.loads((moved / "state/aag-surface-install.json").read_text())
+        self.assertEqual(state["source"], str(moved))
+        self.lifecycle("uninstall")
 
     def test_removed_skill_is_removed_only_from_owned_entries_on_update(self):
         self.command("sync")

@@ -1,6 +1,7 @@
 ---
 name: aag-surface-explain-clearly
 description: Use only when the user explicitly invokes aag-surface-explain-clearly or asks to use this explanation skill.
+invocation: explicit
 ---
 # Explain clearly
 

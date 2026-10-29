@@ -48,8 +48,9 @@ are no production custom agents yet.
 Two further skills support everyday work: `aag-surface-reset-repositories`
 previews or performs explicitly requested cleanup to each repository's integration
 branch, and `aag-surface-explain-clearly` provides grounded technical explanations
-when explicitly invoked. Both skills are generated for Codex and the Cursor plugin
-through the same workflow as the maintenance skills.
+when explicitly invoked: `$aag-surface-explain-clearly` in Codex or
+`/aag-surface-explain-clearly` in Cursor. Both skills are generated for Codex and
+the Cursor plugin through the same workflow as the maintenance skills.
 
 ## Generate and validate
 
@@ -87,13 +88,22 @@ unchanged.
 
 Canonical names start with `aag-surface-`, use lowercase letters, digits, and
 single hyphens, and are at most 64 characters. Rules are Markdown with an H1 and
-body. Skills use exactly `name` and `description` frontmatter. Agents add
+body. Skills require `name` and `description` frontmatter and optionally accept
+`invocation: explicit` (default `auto`). Agents add
 `access: read-only` or `access: inherit`. Metadata uses one-line plain text or
 JSON-quoted strings; full YAML features are intentionally unsupported. Native
 skill headers are generated with quoted string values so YAML punctuation and
 boolean-like descriptions retain their meaning. Start
 from the templates and the matching authoring skill. Skill resources are copied
 with the skill; use interpreter commands for scripts. Symlinks are rejected.
+
+For explicit invocation, the generator sets Cursor's documented
+[`disable-model-invocation: true`](https://cursor.com/docs/skills#disabling-automatic-invocation)
+on both skill copies, since Cursor also scans Codex skills. It also generates
+Codex's [`agents/openai.yaml` policy](https://learn.chatgpt.com/docs/build-skills#optional-metadata)
+with `allow_implicit_invocation: false`. Do not supply that resource in an explicit
+canonical skill: generation rejects the conflict. Other skills retain contextual
+selection. These controls do not resolve duplicate discovery.
 
 Codex agent TOML contains `name`, `description`, and `developer_instructions`.
 For read-only intent, Cursor receives `readonly: true`; Codex receives a no-write
@@ -139,7 +149,8 @@ entries but do not modify our owned files or directories. The whole global
 `AGENTS.md` belongs to this surface after a collision-free installation; there
 are no merged sections or background repair processes.
 
-`uninstall` removes only entries recorded for this source and home. It preserves
+`uninstall` removes only entries recorded for this source and home, then deletes
+the empty ownership manifest so the uninstalled source can be moved. It preserves
 shared parent directories, other plugins, `.system` skills, company content,
 configuration, credentials, and the entire source repository with its generated
 files. Repeating installation or removal is supported. Without a manifest,
