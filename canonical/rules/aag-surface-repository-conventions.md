@@ -1,0 +1,5 @@
+# Repository conventions
+
+Before naming variables, creating branches, or writing commit messages, inspect the repository's instructions, tooling, nearby code, and relevant history. Follow its established naming, formatting, and commit conventions, applying each repository's conventions separately when a task spans repositories.
+
+Explicit repository requirements take precedence over inconsistent examples. Where requirements are unstated, follow the prevailing style in the relevant code or history. Preserve the style of touched files; avoid unrelated renaming or reformatting and do not impose conventions from another repository. Clarify conflicts that materially affect the task.

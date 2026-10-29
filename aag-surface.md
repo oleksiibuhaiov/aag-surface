@@ -38,11 +38,13 @@ generator or installation command verifies file operations, not client loading.
     aag-surface.lock
 ```
 
-The initial content contains two rules: surface governance and workspace
-coordination. Workspace coordination covers task scope, existing work, and
-dependency-aware implementation, validation, and delivery across repositories.
-Four skills maintain the surface and author rules, skills, and agents. There
-are no production custom agents yet.
+The rules cover surface governance, workspace coordination, concise technical
+writing, repository conventions, commit signing, and approval for side effects.
+Signing is required only where repository or company policy requires it, after
+change approval and an explicit push request; a signing failure stops further
+actions until the user initiates another attempt. External actions require their
+own explicit approval. Four skills maintain the surface and author rules, skills,
+and agents. There are no production custom agents yet.
 
 Two further skills support everyday work: `aag-surface-reset-repositories`
 previews or performs explicitly requested cleanup to each repository's integration

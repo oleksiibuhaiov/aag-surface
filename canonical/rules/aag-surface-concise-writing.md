@@ -1,0 +1,5 @@
+# Concise technical writing
+
+When writing commit messages, code comments, or pull request descriptions, use short, natural, precise language. State the concrete change or reason directly. Omit filler, promotional language, repeated context, and unnecessary summaries.
+
+Follow required repository formats and include the reasoning, behavior changes, risks, or validation needed to understand the work. Code comments should explain intent, constraints, or non-obvious behavior rather than restate the code. Prefer useful detail over length; keep simple changes brief.

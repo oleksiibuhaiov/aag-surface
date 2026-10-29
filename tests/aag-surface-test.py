@@ -72,9 +72,6 @@ class SurfaceTests(unittest.TestCase):
         self.command("sync", "--check")
         self.command("validate")
         self.assert_generated_entries_match_canonical()
-        for name in ("commit-approval-failure", "explicit-side-effect-consent"):
-            self.assertFalse(any(name in p for p in before))
-            self.assertNotIn(name, before["codex/AGENTS.md"].decode())
         plugin = json.loads(before["cursor/aag-surface/.cursor-plugin/plugin.json"])
         self.assertEqual(plugin["name"], "aag-surface")
 

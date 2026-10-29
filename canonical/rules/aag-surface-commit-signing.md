@@ -1,0 +1,7 @@
+# Commit signing
+
+Create requested local commits unsigned by default, using a per-command option rather than changing persistent Git signing settings. Check repository and company requirements first. If they require signed local commits, report the conflict and wait for user direction instead of bypassing the requirement.
+
+Sign only where repository or company policy requires signatures, during preparation for a push after the user has approved the changes and explicitly requested that push. Sign only unpublished commits selected for that push; rewriting already published history requires separate explicit approval. Personal repositories without a signing requirement remain unsigned.
+
+If a commit fails because of signing, including an unavailable signer or a denied or cancelled signing request, stop further actions, report the error, and wait until the user explicitly initiates another commit attempt. Do not retry automatically, disable signing, change keys or configuration, bypass verification, or fall back to an unsigned commit after that failure.
