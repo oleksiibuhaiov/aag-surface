@@ -1,6 +1,6 @@
 ---
 name: "aag-surface-explain-clearly"
-description: "Use when explaining code, architecture, changes, errors, data models, interfaces, or tooling, to an experienced software engineer who may be unfamiliar with the stack, especially when an earlier explanation was confusing."
+description: "Use only when the user explicitly invokes aag-surface-explain-clearly or asks to use this explanation skill."
 ---
 # Explain clearly
 

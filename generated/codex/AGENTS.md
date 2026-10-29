@@ -6,12 +6,6 @@ Before changing, generating, installing, validating, or committing `~/aag-surfac
 
 This requirement applies to this surface's entries, not unrelated content in shared agent directories. If the skill cannot be read or followed, report the blocker before changing the surface.
 
-# Technical explanation clarity
-
-Before explaining code, architecture, changes, errors, data models, interfaces, or tooling, read and follow the `aag-surface-explain-clearly` skill.
-
-Assume an experienced software engineer who is unfamiliar with the current stack unless the conversation establishes otherwise. Support code references with verified clickable file and line links, illustrate discussed data models and interfaces with concrete examples, and explain unfamiliar acronyms and stack-specific terminology on first use. Keep detail proportional to the question.
-
 # Workspace coordination
 
 The workspace may contain multiple Git repositories and standalone files. Identify the repositories and paths relevant to the task, investigate their relationships as needed, and keep changes focused on the task while preserving unrelated work.

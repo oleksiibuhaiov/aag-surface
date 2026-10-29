@@ -1,9 +1,0 @@
----
-description: "Technical explanation clarity"
-alwaysApply: true
----
-# Technical explanation clarity
-
-Before explaining code, architecture, changes, errors, data models, interfaces, or tooling, read and follow the `aag-surface-explain-clearly` skill.
-
-Assume an experienced software engineer who is unfamiliar with the current stack unless the conversation establishes otherwise. Support code references with verified clickable file and line links, illustrate discussed data models and interfaces with concrete examples, and explain unfamiliar acronyms and stack-specific terminology on first use. Keep detail proportional to the question.
