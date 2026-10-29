@@ -5,11 +5,10 @@ source lives at `~/aag-surface`. Generated integrations use native user location
 and do not depend on the working directory or on a `~/git` workspace.
 
 Stage 1 provides the source, generators, ownership-aware lifecycle, and fixture
-tests. **Live activation is not yet verified.** Cursor discovers skills from
-both its plugin and `~/.codex/skills`; exactly-once discovery remains unresolved.
-Keep the existing integration active until that requirement is verified in the
-required clients. A successful generator or installation command verifies file
-operations, not client loading.
+tests. Local verification covers Codex CLI discovery and Cursor IDE's automatic
+context with third-party imports disabled by the user. Manual explanation-skill
+invocation and the other required clients still need verification. A successful
+generator or installation command verifies file operations, not client loading.
 
 ## Contents
 
@@ -126,14 +125,19 @@ will need separate compatibility verification. Configuration such as
 `~/.codex/config.toml` is outside this installation's ownership.
 
 The lifecycle commands inspect, install/update, or remove an installation.
-Resolve the runtime blocker below before installation/update; status and removal
-remain available independently:
+For installation, use the client-discovery settings described below, then verify
+loading after reload. The following commands are separate operations:
 
 ```sh
 sh ~/aag-surface/aag-surface.sh status
 sh ~/aag-surface/aag-surface.sh install
 sh ~/aag-surface/aag-surface.sh uninstall
 ```
+
+`status` compares installed entries with the ownership manifest's recorded
+digests. It does not query running clients or compare installation contents with
+current source. `validate` checks canonical/generated consistency; `install`
+applies those generated copies.
 
 `install` also updates an existing installation. It first checks the complete
 destination set, refuses any existing unowned entry, stages generated copies,
@@ -187,22 +191,34 @@ discovers the default rules, skills, and agents directories. Cursor documents
 The directory structure alone does not prove a particular installed client or
 organization policy loaded it.
 
-The outstanding issue is [Cursor skill compatibility discovery](https://cursor.com/docs/skills):
-it also scans `~/.codex/skills`. Prefixes distinguish this surface from company
-content but do not merge the plugin and native copies. A read-only inspection
-of Cursor IDE 3.27.22's bundled loader found path-based deduplication that treats
-those locations differently. Its internal `metadata.surfaces` filter has no
-verified documented contract and is not used here. No duplicate-hiding metadata,
-global import disabling, or product modifications are applied.
+[Cursor compatibility discovery](https://cursor.com/docs/skills) also scans
+`~/.codex/skills` when third-party imports are enabled. Prefixes distinguish this
+surface from company content but do not merge the plugin and native copies.
 
-Before live activation or legacy removal, establish an agreed, supported
-exactly-once mechanism and verify all required clients from a normal repository
-under `~/git`, a repository elsewhere, and a standalone directory. Confirm each
-rule loads, each logical skill appears once, and any defined agents load.
-Record client versions and evidence. At preparation time Codex CLI 0.164.0 and
-Cursor IDE 3.27.22 were found; Cursor Agent CLI was not found. Do not count an
-absent client or an untested app/extension as a pass. Invoking `cursor agent`
-can install the CLI automatically and is not a read-only discovery check.
+For this installation, the user disabled **Include Third-Party Plugins, Skills,
+and Other Configs** in Cursor Settings. This is a supported
+[third-party import setting](https://cursor.com/docs/reference/third-party-hooks).
+It affects imports from other tools globally; the installer never changes it.
+A fresh Cursor IDE 3.27.22 session in `~/git` confirmed that the rules and five
+automatic skills came from the local plugin, with no Codex-origin duplicates.
+The explanation skill was correctly absent from automatic context; its manual
+picker selection and invocation remain untested. Separate installed copies are
+expected and do not by themselves establish duplicate presentation.
+
+Codex CLI 0.164.0 diagnostics confirmed user-wide rules and six enabled skills,
+each once, from `~/git`, repositories inside and outside it, and a standalone
+directory. Manual explanation-skill invocation, Cursor IDE sessions outside
+`~/git`, Cursor Agent CLI, and the Codex app/IDE extension still need checks.
+Do not assume the IDE's import setting controls Cursor Agent CLI. Do not count
+an absent or untested client as a pass. Invoking `cursor agent` can install the
+CLI automatically and is not a read-only discovery check.
+
+Verify loading after installation and reload, before treating a client as ready.
+Record automatic-context discovery separately from manual skill selection;
+on-demand skills are intentionally omitted from the automatic catalog. Confirm
+each logical skill appears once in its applicable catalog and any defined agents
+load. Machine-local evidence is kept in `state/aag-surface-verification.json`.
+`status` does not evaluate that evidence or claim runtime success.
 
 Normal [Codex instruction precedence](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
 applies: global `AGENTS.override.md` can supersede global `AGENTS.md`, and project
