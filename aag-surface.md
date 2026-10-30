@@ -47,11 +47,15 @@ actions until the user initiates another attempt. External actions require their
 own explicit approval. Four skills maintain the surface and author rules, skills,
 and agents. There are no production custom agents yet.
 
-Two further skills support everyday work: `aag-surface-reset-repositories`
+Three further skills support everyday work: `aag-surface-reset-repositories`
 previews or performs explicitly requested cleanup to each repository's integration
-branch, and `aag-surface-explain-clearly` provides grounded technical explanations
-when explicitly invoked: `$aag-surface-explain-clearly` in Codex or
-`/aag-surface-explain-clearly` in Cursor. Both skills are generated for Codex and
+branch; `aag-surface-onboard-repository` adds a cloned repository of any language
+to a multi-root `.code-workspace` file, builds the pinned runtime and tooling its
+editor settings name, and writes a Git-excluded `.vscode/settings.json` derived
+from that repository's own CI toolchain (stack profiles and a setting-scope
+checker ship with the skill); and `aag-surface-explain-clearly` provides grounded technical
+explanations when explicitly invoked: `$aag-surface-explain-clearly` in Codex or
+`/aag-surface-explain-clearly` in Cursor. All three are generated for Codex and
 the Cursor plugin through the same workflow as the maintenance skills.
 
 The [orchestration skill](canonical/skills/aag-surface-orchestrate-task/SKILL.md)
