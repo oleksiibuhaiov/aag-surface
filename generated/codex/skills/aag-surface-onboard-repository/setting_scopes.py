@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Report where each editor setting key is contributed and at which scope.
 
-Usage: python3 setting_scopes.py <key> [<key> ...]
+Usage: python3 setting_scopes.py --editor <cursor|code> [--profile <name>] <key> [<key> ...]
 
-Scans the manifests of installed Cursor/VS Code extensions and the built-in
-extensions shipped with the application. For each key prints the contributing
-extension, the declared scope, and whether the key may be set in a folder's
-.vscode/settings.json inside a multi-root workspace. Keys that are not found
-are reported so they are not written blindly.
+Lists the selected editor's installed extensions and reads their manifests
+together with the built-in extensions shipped with the application. For each
+key prints the contributing extension, the declared scope, and whether the key
+may be set in a folder's .vscode/settings.json inside a multi-root workspace.
+Keys that are not found or are declared with conflicting scopes are reported
+so they are not written blindly.
 
 Only resource, language-overridable, and machine-overridable scopes take
 effect in folder settings. window, machine, and application scopes must live
@@ -17,13 +18,11 @@ in the .code-workspace settings block or user settings.
 from __future__ import annotations
 
 import argparse
-import subprocess
-from pathlib import Path
-import glob
 import json
-import os
 import shutil
+import subprocess
 import sys
+from pathlib import Path
 
 FOLDER_OK = {"resource", "language-overridable", "machine-overridable"}
 

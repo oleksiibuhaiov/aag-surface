@@ -1,9 +1,14 @@
 import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
 import json
+
+# Loading skill scripts must not leave __pycache__ in the canonical skill
+# directory; the generator treats it as a resource and validate reports stale output.
+sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1] / 'canonical/skills/aag-surface-onboard-repository'
 def load(name):
